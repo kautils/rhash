@@ -1,4 +1,4 @@
-if(NOT DEFINED ${KAUTIL_THIRD_PARTY_DIR})
+if(NOT DEFINED KAUTIL_THIRD_PARTY_DIR)
     set(KAUTIL_THIRD_PARTY_DIR ${CMAKE_BINARY_DIR})
     file(MAKE_DIRECTORY "${KAUTIL_THIRD_PARTY_DIR}")
 endif()
@@ -23,21 +23,25 @@ set(${module_name}_common_pref
     #DEBUG_VERBOSE
     MODULE_PREFIX kautil hash
     MODULE_NAME ${module_name}
-    INCLUDES $<BUILD_INTERFACE:${__rhash_dir}/include> $<INSTALL_INTERFACE:include> 
+    INCLUDES $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}> $<INSTALL_INTERFACE:include> 
     SOURCES ${srcs}
     LINK_LIBS rhash
     EXPORT_NAME_PREFIX ${PROJECT_NAME}
     EXPORT_VERSION ${PROJECT_VERSION}
     EXPORT_VERSION_COMPATIBILITY AnyNewerVersion
         
-    DESTINATION_INCLUDE_DIR include/kautil/hash/rhash
+    DESTINATION_INCLUDE_DIR include/kautil/hash
     DESTINATION_CMAKE_DIR cmake
     DESTINATION_LIB_DIR lib
 )
 
-CMakeLibraryTemplate(${module_name} EXPORT_LIB_TYPE static ${${module_name}_common_pref} )
-CMakeLibraryTemplate(${module_name} EXPORT_LIB_TYPE shared ${${module_name}_common_pref} )
-target_link_directories(${${module_name}_static} PRIVATE ${__rhash_dir}/lib)
+
+foreach(__libtype shared static)
+    CMakeLibraryTemplate(${module_name} EXPORT_LIB_TYPE ${__libtype} ${${module_name}_common_pref} )
+    target_link_directories(${${module_name}_${__libtype}} PRIVATE ${__rhash_dir}/lib)
+    target_include_directories(${${module_name}_${__libtype}} PRIVATE $<BUILD_INTERFACE:${__rhash_dir}/include>)
+endforeach()
+
 
 set(__t ${${module_name}_static_tmain})
 add_executable(${__t})
