@@ -23,7 +23,7 @@ set(${module_name}_common_pref
     #DEBUG_VERBOSE
     MODULE_PREFIX kautil hash
     MODULE_NAME ${module_name}
-    INCLUDES ${CMAKE_CURRENT_LIST_DIR} $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}> $<INSTALL_INTERFACE:include> 
+    INCLUDES ${__rhash_dir}/include  $<INSTALL_INTERFACE:include>  
     SOURCES ${srcs}
     LINK_LIBS rhash
     EXPORT_NAME_PREFIX ${PROJECT_NAME}
@@ -39,7 +39,7 @@ set(${module_name}_common_pref
 foreach(__libtype shared static)
     CMakeLibraryTemplate(${module_name} EXPORT_LIB_TYPE ${__libtype} ${${module_name}_common_pref} )
     target_link_directories(${${module_name}_${__libtype}} PRIVATE ${__rhash_dir}/lib)
-    target_include_directories(${${module_name}_${__libtype}} PRIVATE $<BUILD_INTERFACE:${__rhash_dir}/include>)
+    target_include_directories(${${module_name}_${__libtype}} PRIVATE ${__rhash_dir}/include)
 endforeach()
 
 
